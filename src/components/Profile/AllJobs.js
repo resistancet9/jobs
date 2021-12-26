@@ -1,14 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import styles from "./AllJobs.module.css";
 import JobContent from "./JobContent";
 import NoJobsFound from "./NoJobsFound";
+import AuthContext from "../../store/auth-context";
+import { useHistory } from "react-router-dom";
 
 const AllJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [httpError, setHttpError] = useState(null);
+  const authCtx = useContext(AuthContext);
+  const history = useHistory()
 
   useEffect(() => {
+
+    if(!authCtx.token) {
+      history.replace('/')
+    }
+
     const fetchJobs = async () => {
       const response = await fetch(
         "https://jobs-api.squareboat.info/api/v1/jobs"
@@ -42,6 +51,7 @@ const AllJobs = () => {
       setIsLoading(false);
       setHttpError(error.message);
     });
+
   }, []);
 
   if (isLoading) {
